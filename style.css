@@ -1,0 +1,417 @@
+/* Reset */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f0f4f8;
+  margin: 0;
+  padding: 30px 20px;
+  color: #333;
+}
+.auth-container {
+  max-width: 450px;
+  margin: 60px auto;
+  background: white;
+  padding: 40px 35px;
+  border-radius: 15px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  text-align: center;
+}
+
+.auth-container h1 {
+  font-weight: 700;
+  margin-bottom: 30px;
+  color: #222;
+}
+
+.auth-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.auth-container input[type="email"],
+.auth-container input[type="password"] {
+  padding: 14px 18px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1.8px solid #ccc;
+  transition: border-color 0.3s;
+}
+
+.auth-container input[type="email"]:focus,
+.auth-container input[type="password"]:focus {
+  border-color: #3498db;
+  outline: none;
+}
+
+.btn-group {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn-group button {
+  flex: 1 1 130px;
+  padding: 14px 20px;
+  font-weight: 700;
+  font-size: 15px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  color: white;
+  user-select: none;
+}
+
+.btn-group button:nth-child(1) {
+  background-color: #2980b9;
+}
+
+.btn-group button:nth-child(1):hover {
+  background-color: #1c5980;
+}
+
+.btn-group button:nth-child(2) {
+  background-color: #27ae60;
+}
+
+.btn-group button:nth-child(2):hover {
+  background-color: #1f8a45;
+}
+
+.google-login {
+  background-color: #4285f4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 14px;
+  padding: 12px 18px;
+  flex: 1 1 200px;
+}
+
+.google-login:hover {
+  background-color: #3367d6;
+}
+
+.google-login img {
+  height: 20px;
+  width: 20px;
+}
+
+@media (max-width: 480px) {
+  .btn-group {
+    flex-direction: column;
+  }
+  .btn-group button {
+    flex: 1 1 100%;
+  }
+}
+
+.container {
+  max-width: 700px;
+  margin: auto;
+  background: #ffffff;
+  padding: 30px 40px;
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+}
+
+h1, h2 {
+  text-align: center;
+  font-weight: 700;
+  color: #222;
+  margin-bottom: 25px;
+}
+
+form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 30px;
+  justify-content: center;
+}
+
+form input[type="text"] {
+  flex: 1 1 100%;
+  max-width: 400px;
+  padding: 14px 18px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1.5px solid #ccc;
+  transition: border-color 0.3s;
+}
+
+form input[type="text"]:focus {
+  border-color: #3498db;
+  outline: none;
+}
+
+.date-fields {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.date-fields label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 600;
+  font-size: 14px;
+  color: #555;
+}
+
+.date-fields input[type="date"] {
+  margin-top: 6px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1.5px solid #ccc;
+  font-size: 14px;
+  transition: border-color 0.3s;
+  width: 140px;
+}
+
+.date-fields input[type="date"]:focus {
+  border-color: #3498db;
+  outline: none;
+}
+
+form button {
+  background-color: #3498db;
+  border: none;
+  color: white;
+  font-weight: 700;
+  padding: 14px 28px;
+  font-size: 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  flex: 1 1 150px;
+  max-width: 180px;
+  align-self: center;
+  transition: background-color 0.3s;
+}
+
+form button:hover {
+  background-color: #1d6fa5;
+}
+
+.buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+
+.buttons button,
+.import-btn {
+  padding: 12px 22px;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+  font-size: 14px;
+  transition: background-color 0.3s;
+  color: white;
+  user-select: none;
+}
+
+.buttons button {
+  background-color: #27ae60;
+}
+
+.buttons button:hover {
+  background-color: #1f8a45;
+}
+
+.import-btn {
+  background-color: #e67e22;
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+}
+
+.import-btn:hover {
+  background-color: #b95d15;
+}
+
+.import-btn input[type="file"] {
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+li {
+  background: #fff;
+  margin-bottom: 18px;
+  padding: 20px 25px;
+  border-radius: 12px;
+  box-shadow: 0 3px 10px rgb(0 0 0 / 0.07);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: background-color 0.3s;
+}
+
+li.completed {
+  background-color: #d4edda;
+  color: #27632a;
+  text-decoration: line-through;
+  box-shadow: 0 3px 12px rgb(39 99 42 / 0.3);
+}
+
+li .info {
+  font-size: 18px;
+  font-weight: 600;
+  color: inherit;
+}
+
+.date-info {
+  font-size: 13px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.date-info div {
+  background-color: #3498db;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 15px;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgb(52 152 219 / 0.4);
+  user-select: none;
+}
+
+.date-info div:last-child {
+  background-color: #e74c3c;
+  box-shadow: 0 2px 6px rgb(231 76 60 / 0.6);
+}
+
+li.completed .date-info div {
+  background-color: #2ecc71 !important;
+  box-shadow: 0 2px 6px rgb(46 204 113 / 0.6) !important;
+}
+
+button.complete-btn, button.delete-btn {
+  font-size: 14px;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  user-select: none;
+  width: fit-content;
+  transition: background-color 0.3s;
+}
+
+button.complete-btn {
+  background-color: #2980b9;
+  color: white;
+}
+
+button.complete-btn:hover {
+  background-color: #1c5980;
+}
+
+button.delete-btn {
+  background-color: #c0392b;
+  color: white;
+  margin-left: 10px;
+}
+
+button.delete-btn:hover {
+  background-color: #80231a;
+}
+
+li > div.buttons {
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px;
+}
+
+/* Login Section */
+#loginSection {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+#loginSection input[type="email"],
+#loginSection input[type="password"] {
+  padding: 12px;
+  width: 90%;
+  max-width: 300px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+#loginSection button {
+  background-color: #8e44ad;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  font-weight: 700;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background-color 0.3s;
+}
+
+#loginSection button:hover {
+  background-color: #6c3483;
+}
+
+#logoutButton {
+  background-color: #2c3e50;
+  margin-top: 15px;
+  color: white;
+  padding: 10px 20px;
+  font-weight: 700;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  border: none;
+margin-left: 277px;
+}
+
+#logoutButton:hover {
+  background-color: #1a252f;
+}
+
+
+@media (max-width: 480px) {
+  form {
+    flex-direction: column;
+  }
+
+  .date-fields {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  form button {
+    max-width: 100%;
+  }
+
+  input[type="date"] {
+    width: 100%;
+  }
+}

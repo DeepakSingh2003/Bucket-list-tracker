@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bucket List Tracker</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+</head>
+
+<body>
+  <div id="authContainer" class="auth-container">
+    <h1>Login to Bucket List Tracker</h1>
+    <form id="authForm">
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <div class="btn-group">
+        <button type="button" onclick="login()">Login</button>
+        <button type="button" onclick="signup()">Sign Up</button>
+        <button type="button" class="google-login" onclick="googleLogin()">
+
+          Login with Google
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div class="container" id="appContainer" style="display:none;">
+    <h1>🌟 Bucket List Tracker</h1>
+
+    <form id="bucketForm">
+      <input type="text" id="bucketInput" placeholder="Add a new task" required />
+      <div class="date-fields">
+        <label>From: <input type="date" id="startDate" /></label>
+        <label>To: <input type="date" id="endDate" /></label>
+      </div>
+      <button type="submit">Add Task</button>
+    </form>
+    <div class="buttons">
+      <button onclick="exportTasksJSON()">Export as JSON</button>
+      <button onclick="exportTasksPDF()">Export as PDF</button>
+      <label class="import-btn">
+        Import JSON <input type="file" id="importFile" accept=".json" hidden />
+      </label>
+    </div>
+    <h2>📅 Upcoming Tasks</h2>
+    <ul id="bucketList"></ul>
+    <h2>✅ Previous Tasks</h2>
+    <ul id="previousList"></ul>
+    <button onclick="logout()" id="logoutButton">Logout</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
