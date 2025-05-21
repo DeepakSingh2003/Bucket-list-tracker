@@ -25,7 +25,13 @@ function showApp(loggedIn) {
 // 🧠 Listen to login/logout events
 auth.onAuthStateChanged((user) => {
   showApp(!!user); // Show app if user is logged in
-  if (user) renderItems(); // Load tasks
+  if (user) {
+    renderItems(); // Load user-specific tasks
+  } else {
+    // Optionally clear tasks from UI when logged out
+    document.getElementById("bucketList").innerHTML = "";
+    document.getElementById("previousList").innerHTML = "";
+  }
 });
 
 // 🔐 User login
@@ -76,12 +82,16 @@ document.getElementById("bucketForm").addEventListener("submit", function (e) {
 
 // 📥 Get tasks from localStorage
 function getTasks() {
-  return JSON.parse(localStorage.getItem("bucketTasks") || "[]");
+  const user = auth.currentUser;
+  if (!user) return [];
+  return JSON.parse(localStorage.getItem("bucketTasks_" + user.uid) || "[]");
 }
 
 // 📤 Save tasks to localStorage
 function saveTasks(tasks) {
-  localStorage.setItem("bucketTasks", JSON.stringify(tasks));
+  const user = auth.currentUser;
+  if (!user) return;
+  localStorage.setItem("bucketTasks_" + user.uid, JSON.stringify(tasks));
 }
 
 // 📋 Render tasks into the DOM
