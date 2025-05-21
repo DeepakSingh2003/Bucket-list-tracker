@@ -415,3 +415,57 @@ margin-left: 277px;
     width: 100%;
   }
 }
+@media (max-width: 480px) {
+  /* Container padding and width adjustment */
+  .container {
+    padding: 20px 15px;
+    margin: 20px 10px;
+  }
+
+  /* Form layout: stack inputs vertically */
+  form#bucketForm {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  /* Bucket input full width */
+  form#bucketForm input[type="text"] {
+    max-width: 100%;
+    flex: 1 1 100%;
+  }
+
+  /* Date fields stacked vertically and full width */
+  .date-fields {
+    flex-direction: column;
+    gap: 10px;
+    justify-content: stretch;
+  }
+
+  .date-fields label {
+    width: 100%;
+  }
+
+  .date-fields input[type="date"] {
+    width: 100%;
+  }
+
+  /* Add task button full width */
+  form#bucketForm button {
+    max-width: 100%;
+    flex: 1 1 100%;
+  }
+
+  /* Buttons below the form stacked and full width */
+  .buttons {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  .buttons button,
+  .import-btn {
+    width: 100%;
+    text-align: center;
+  }
+}
