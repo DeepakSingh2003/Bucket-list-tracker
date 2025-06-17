@@ -6,52 +6,163 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Bucket List Tracker</title>
   <link rel="stylesheet" href="style.css" />
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/js/all.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 </head>
 
 <body>
-  <div id="authContainer" class="auth-container">
-    <h1>Login to Bucket List Tracker</h1>
-    <form id="authForm">
-      <input type="email" id="email" placeholder="Email" required />
-      <input type="password" id="password" placeholder="Password" required />
-      <div class="btn-group">
-        <button type="button" onclick="login()">Login</button>
-        <button type="button" onclick="signup()">Sign Up</button>
+  <!-- Auth Container -->
+  <div class="auth-container" id="authContainer">
+    <div class="mobile-toggle">
+      <button id="mobileSignInBtn" class="active">Sign In</button>
+      <button id="mobileSignUpBtn">Register</button>
+    </div>
+    <div class="form-container sign-in-container">
+      <form onsubmit="event.preventDefault(); login();">
+        <h1>Sign in</h1>
+        <input type="email" id="emailLogin" placeholder="Email" required />
+        <input type="password" id="passwordLogin" placeholder="Password" required />
+        <button type="submit">Login</button>
+        <span>or use</span>
         <button type="button" class="google-login" onclick="googleLogin()">
-
-          Login with Google
+          <img src="https://img.icons8.com/color/16/000000/google-logo.png" /> Sign in with Google
         </button>
+      </form>
+    </div>
+    <div class="form-container sign-up-container">
+      <form onsubmit="event.preventDefault(); signup();">
+        <h1>Register</h1>
+        <input type="email" id="emailSignup" placeholder="Email" required />
+        <input type="password" id="passwordSignup" placeholder="Password" required />
+        <button type="submit">Sign Up</button>
+      </form>
+    </div>
+    <div class="overlay-container">
+      <div class="overlay">
+        <div class="overlay-panel overlay-left">
+          <h1>Welcome Back!</h1>
+          <p>To keep connected with us please login with your credentials</p>
+          <button class="ghost" onclick="toggleForm(false)">Login</button>
+        </div>
+        <div class="overlay-panel overlay-right">
+          <h1>Hello, Friend!</h1>
+          <p>Enter your details and start your journey</p>
+          <button class="ghost" onclick="toggleForm(true)">Register</button>
+        </div>
       </div>
-    </form>
+    </div>
   </div>
 
-  <div class="container" id="appContainer" style="display:none;">
-    <h1>🌟 Bucket List Tracker</h1>
+  <!-- App Container -->
+  <div id="appContainer" style="display: none;">
+    <div class="sidebar-backdrop" onclick="toggleSidebar()"></div>
+    <div class="sidebar">
+      <ul class="sidebar-menu">
+        <li class="active" data-filter="all"><i class="fas fa-star"></i> <span>All Tasks</span></li>
+        <li data-filter="due-today"><i class="fas fa-calendar-day"></i> <span>Due Today</span></li>
+        <li data-filter="completed"><i class="fas fa-check-circle"></i> <span>Completed</span></li>
+        <li data-filter="categories"><i class="fas fa-folder"></i> <span>Categories</span></li>
+        <ul class="category-list" id="categoryList"></ul>
+        <li class="new-category" onclick="openNewCategoryModal()"><i class="fas fa-plus"></i> <span>New Category</span>
+        </li>
 
-    <form id="bucketForm">
-      <input type="text" id="bucketInput" placeholder="Add a new task" required />
-      <div class="date-fields">
-        <label>From: <input type="date" id="startDate" /></label>
-        <label>To: <input type="date" id="endDate" /></label>
-      </div>
-      <button type="submit">Add Task</button>
-    </form>
-    <div class="buttons">
-      <button onclick="exportTasksJSON()">Export as JSON</button>
-      <button onclick="exportTasksPDF()">Export as PDF</button>
-      <label class="import-btn">
-        Import JSON <input type="file" id="importFile" accept=".json" hidden />
-      </label>
+      </ul>
     </div>
-    <h2>📅 Upcoming Tasks</h2>
-    <ul id="bucketList"></ul>
-    <h2>✅ Previous Tasks</h2>
-    <ul id="previousList"></ul>
-    <button onclick="logout()" id="logoutButton">Logout</button>
+    <div class="main-content">
+      <div class="app-header">
+        <button class="mobile-menu-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+        <div class="date-circle" id="dateCircle"></div>
+        <div class="greeting">
+          <h2 id="greetingText">Good morning, User</h2>
+          <p>Let's plan for the day</p>
+        </div>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+      </div>
+      <div class="task-controls">
+        <label class="file-import-label">
+          <i class="fas fa-upload"></i> Import Tasks
+          <input type="file" id="importFile" accept=".json" />
+        </label>
+        <span id="fileNameDisplay" class="file-name-display">No file chosen</span>
+        <button onclick="exportTasksJSON()">Export JSON</button>
+        <button onclick="exportTasksPDF()">Export PDF</button>
+      </div>
+      <div class="task-list">
+        <div class="task-header">
+          <span></span>
+          <span>Title</span>
+          <span>Quick Look</span>
+          <span>Days Left</span>
+          <span>Category</span>
+
+          <span>Delete</span>
+        </div>
+        <div id="taskList"></div>
+        <div class="add-task" onclick="openAddTaskModal()">+ Add new task</div>
+      </div>
+    </div>
+    <!-- Modal for Add Task -->
+    <div class="modal" id="addTaskModal">
+      <div class="modal-content">
+        <h3>Add New Task</h3>
+        <form id="bucketForm">
+          <input type="text" id="bucketInput" placeholder="Task Title" required />
+          <input type="text" id="categoryInput" placeholder="Category (optional)" />
+          <select id="priorityInput">
+            <option value="low">Low Priority</option>
+            <option value="medium">Medium Priority</option>
+            <option value="high">High Priority</option>
+          </select>
+          <input type="date" id="startDate" />
+          <input type="date" id="endDate" />
+          <input type="text" id="subtasks" placeholder="Subtasks (comma-separated)" />
+          <button type="submit">Add Task</button>
+          <button type="button" onclick="closeAddTaskModal()">Cancel</button>
+        </form>
+      </div>
+    </div>
+    <!-- Modal for Edit/Subtasks/Notes -->
+    <div class="modal" id="taskModal">
+      <div class="modal-content">
+        <h3>Task Details</h3>
+        <form id="editTaskForm">
+          <input type="text" id="editTitle" placeholder="Task Title" required />
+          <input type="text" id="editCategory" placeholder="Category" />
+          <select id="editPriority">
+            <option value="low">Low Priority</option>
+            <option value="medium">Medium Priority</option>
+            <option value="high">High Priority</option>
+          </select>
+          <input type="date" id="editStartDate" />
+          <input type="date" id="editEndDate" />
+          <div class="progress-bar">
+            <div class="progress-bar-fill" id="modalProgressBar"></div>
+          </div>
+          <div class="progress-text" id="modalProgressText">0% Complete</div>
+          <textarea id="editNotes" placeholder="Notes (max 500 characters)" maxlength="500"></textarea>
+          <div id="subtaskList"></div>
+          <input type="text" id="newSubtask" placeholder="New Subtask" />
+          <button type="button" onclick="addSubtaskToModal()">Add Subtask</button>
+          <button type="submit">Save</button>
+          <button type="button" onclick="closeModal()">Cancel</button>
+        </form>
+      </div>
+    </div>
+    <!-- Modal for New Category -->
+    <div class="modal" id="newCategoryModal">
+      <div class="modal-content">
+        <h3>Add New Category</h3>
+        <form id="newCategoryForm">
+          <input type="text" id="newCategoryInput" placeholder="Category Name" required />
+          <button type="submit">Add</button>
+          <button type="button" onclick="closeNewCategoryModal()">Cancel</button>
+        </form>
+      </div>
+    </div>
   </div>
 
   <script src="script.js"></script>
