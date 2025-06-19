@@ -188,6 +188,7 @@ function calculateDaysLeft(endDate, completed) {
 }
 
 // Render tasks with real-time updates
+// Render tasks with a toggle button for subtasks
 function renderItems() {
   getTasks((tasks) => {
     taskList.innerHTML = "";
@@ -238,6 +239,45 @@ function renderItems() {
 
       const daysLeft = calculateDaysLeft(task.endDate, task.completed);
 
+      // Create subtask list HTML with toggle button
+      let subtaskHtml = "";
+      if (task.subtasks && task.subtasks.length > 0) {
+        subtaskHtml = `
+          <div class="subtask-section" data-task-index="${i}">
+            <button class="subtask-toggle" onclick="toggleSubtasks(${i})">
+              <i class="fas fa-caret-down"></i> Show Subtasks (${
+                task.subtasks.filter((st) => !st.done).length
+              }/${task.subtasks.length})
+            </button>
+            <ul class="subtask-list" style="display: none;">
+              ${task.subtasks
+                .map(
+                  (st, j) => `
+                    <li class="subtask-item">
+                      <input type="checkbox" ${
+                        st.done ? "checked" : ""
+                      } onchange="toggleSubtask(${i}, ${j}, this)">
+                      <span class="subtask-text ${
+                        st.done ? "subtask-done" : ""
+                      }">
+                        <i class="fas fa-check-circle subtask-icon ${
+                          st.done ? "done" : ""
+                        }"></i> ${st.text}
+                      </span>
+                      ${
+                        st.dueDate
+                          ? `<span class="subtask-due">Due: ${st.dueDate}</span>`
+                          : ""
+                      }
+                    </li>
+                  `
+                )
+                .join("")}
+            </ul>
+          </div>
+        `;
+      }
+
       row.innerHTML = `
         <div><input type="checkbox" ${
           task.completed ? "checked" : ""
@@ -249,22 +289,207 @@ function renderItems() {
         }">
           ${task.text}
         </div>
-        <div class="quick-look">
-          Edit Task
-        </div>
-        <div class="days-left ${daysLeft.class}">
-          ${daysLeft.text}
-        </div>
+        <div class="quick-look">Edit Task</div>
+        <div class="days-left ${daysLeft.class}">${daysLeft.text}</div>
         <div class="category">${task.category || "General"}</div>
-       
+        
         <div class="delete-action">
           <i class="fas fa-trash" onclick="event.stopPropagation(); deleteItem(${i})"></i>
-        </div>
+        </div><br>
+        ${subtaskHtml}
       `;
       row.addEventListener("click", (e) => {
-        if (!e.target.matches("input[type='checkbox']")) openModal(i);
+        if (
+          !e.target.matches("input[type='checkbox']") &&
+          !e.target.matches(".fa-trash") &&
+          !e.target.closest(".subtask-toggle")
+        ) {
+          openModal(i);
+        }
       });
       taskList.appendChild(row);
+    });
+  });
+}
+
+// Toggle subtask visibility
+function toggleSubtasks(taskIndex) {
+  const subtaskSection = document.querySelector(
+    `.subtask-section[data-task-index="${taskIndex}"]`
+  );
+  const subtaskList = subtaskSection.querySelector(".subtask-list");
+  const toggleButton = subtaskSection.querySelector(".subtask-toggle");
+  const icon = toggleButton.querySelector(".fa-caret-down");
+
+  if (subtaskList.style.display === "none") {
+    subtaskList.style.display = "block";
+    icon.classList.remove("fa-caret-down");
+    icon.classList.add("fa-caret-up");
+    toggleButton.textContent = "Hide Subtasks";
+    toggleButton.prepend(icon); // Move icon to the start
+  } else {
+    subtaskList.style.display = "none";
+    icon.classList.remove("fa-caret-up");
+    icon.classList.add("fa-caret-down");
+    toggleButton.textContent = `Show Subtasks (${
+      subtaskSection.querySelectorAll(".subtask-item").length
+    })`;
+    toggleButton.prepend(icon); // Move icon to the start
+  }
+}
+
+// Toggle subtask completion in main area
+function toggleSubtask(taskIndex, subtaskIndex, checkbox) {
+  getTasks((tasks) => {
+    tasks[taskIndex].subtasks[subtaskIndex].done = checkbox.checked;
+    saveTasks(tasks, () => {
+      renderItems();
+      checkDueDates();
+    });
+  });
+}
+
+// Add manual subtask and re-render
+function addSubtaskToModal() {
+  const newSubtask = document.getElementById("newSubtask").value.trim();
+  if (!newSubtask) return;
+
+  getTasks((tasks) => {
+    tasks[editIndex].subtasks = tasks[editIndex].subtasks || [];
+    tasks[editIndex].subtasks.push({
+      text: newSubtask,
+      done: false,
+      dueDate: "",
+    });
+    saveTasks(tasks, () => {
+      openModal(editIndex);
+      document.getElementById("newSubtask").value = "";
+      renderItems(); // Re-render to show new subtask in main area
+    });
+  });
+}
+
+// Suggest subtasks using Google Gemini API
+async function suggestSubtasks() {
+  const suggestBtn = document.getElementById("suggestSubtasksBtn");
+  const suggestedSubtasksContainer =
+    document.getElementById("suggestedSubtasks");
+  const taskTitle = document.getElementById("editTitle").value.trim();
+
+  if (!taskTitle) {
+    alert("Please enter a task title before suggesting subtasks.");
+    return;
+  }
+
+  suggestBtn.disabled = true;
+  suggestBtn.textContent = "Loading...";
+  suggestedSubtasksContainer.innerHTML = "<div>Fetching suggestions...</div>";
+
+  const GEMINI_API_KEY = "AIzaSyCkhssjPb_wTuCMIl0l5A_96zdxg6J7VSM"; // Replace with your new Gemini API key
+  const GEMINI_API_URL =
+    "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
+
+  try {
+    const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [
+          {
+            parts: [
+              {
+                text: `Suggest exactly 3 subtasks for the task "${taskTitle}" in the format:\n- Subtask 1\n- Subtask 2\n- Subtask 3\nEach subtask must be under 15 words and relevant to the task.`,
+              },
+            ],
+          },
+        ],
+        generationConfig: {
+          maxOutputTokens: 100,
+          temperature: 0.7,
+        },
+      }),
+    });
+
+    if (!response.ok) {
+      const errorBody = await response.text();
+      console.error("API Error Response:", errorBody);
+      throw new Error(
+        `API request failed: ${response.statusText} (${response.status}) - ${errorBody}`
+      );
+    }
+
+    const data = await response.json();
+    console.log("Gemini API Response:", data);
+
+    let subtasksText = "";
+    if (
+      data.candidates &&
+      data.candidates[0] &&
+      data.candidates[0].content &&
+      data.candidates[0].content.parts[0]
+    ) {
+      subtasksText = data.candidates[0].content.parts[0].text.trim();
+    } else {
+      throw new Error("Unexpected response structure");
+    }
+
+    const subtaskList = subtasksText
+      .split("\n")
+      .filter((line) => line.match(/^\s*[-*•]|\d+\.\s/))
+      .map((line) => line.replace(/^\s*[-*•]|\d+\.\s/, "").trim())
+      .slice(0, 3);
+
+    suggestedSubtasksContainer.innerHTML = "";
+    if (subtaskList.length > 0) {
+      subtaskList.forEach((subtask, index) => {
+        const div = document.createElement("div");
+        div.className = "suggested-subtask";
+        div.innerHTML = `
+          <span>${subtask}</span>
+          <button type="button" onclick="addSuggestedSubtask('${subtask.replace(
+            /'/g,
+            "\\'"
+          )}')">Add</button>
+        `;
+        suggestedSubtasksContainer.appendChild(div);
+      });
+    } else {
+      suggestedSubtasksContainer.innerHTML =
+        "<div>No subtasks suggested. Try again.</div>";
+    }
+  } catch (error) {
+    console.error("Error fetching subtasks:", error);
+    suggestedSubtasksContainer.innerHTML = `<div>Error: ${error.message}. Please try again.</div>`;
+  } finally {
+    suggestBtn.disabled = false;
+    suggestBtn.textContent = "Suggest Subtasks";
+  }
+}
+
+// Add suggested subtask and re-render
+function addSuggestedSubtask(subtaskText) {
+  if (!subtaskText) {
+    alert("Cannot add empty subtask.");
+    return;
+  }
+
+  getTasks((tasks) => {
+    if (editIndex < 0 || editIndex >= tasks.length) {
+      alert("Invalid task index. Please try again.");
+      return;
+    }
+
+    tasks[editIndex].subtasks = tasks[editIndex].subtasks || [];
+    tasks[editIndex].subtasks.push({
+      text: subtaskText,
+      done: false,
+      dueDate: "",
+    });
+
+    saveTasks(tasks, () => {
+      openModal(editIndex); // Refresh modal
+      document.getElementById("suggestedSubtasks").innerHTML = ""; // Clear suggestions
+      renderItems(); // Re-render to show new subtask in main area
     });
   });
 }

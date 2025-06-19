@@ -120,35 +120,51 @@
           <input type="date" id="startDate" />
           <input type="date" id="endDate" />
           <input type="text" id="subtasks" placeholder="Subtasks (comma-separated)" />
+
           <button type="submit">Add Task</button>
           <button type="button" onclick="closeAddTaskModal()">Cancel</button>
         </form>
       </div>
     </div>
     <!-- Modal for Edit/Subtasks/Notes -->
-    <div class="modal" id="taskModal">
+    <div id="taskModal" class="modal">
       <div class="modal-content">
-        <h3>Task Details</h3>
+        <h2>Task Details</h2>
         <form id="editTaskForm">
-          <input type="text" id="editTitle" placeholder="Task Title" required />
-          <input type="text" id="editCategory" placeholder="Category" />
+          <label>Title</label>
+          <input type="text" id="editTitle" required>
+          <label>Category</label>
+          <input type="text" id="editCategory" list="categorySuggestions">
+          <label>Priority</label>
           <select id="editPriority">
             <option value="low">Low Priority</option>
             <option value="medium">Medium Priority</option>
             <option value="high">High Priority</option>
           </select>
-          <input type="date" id="editStartDate" />
-          <input type="date" id="editEndDate" />
-          <div class="progress-bar">
-            <div class="progress-bar-fill" id="modalProgressBar"></div>
-          </div>
-          <div class="progress-text" id="modalProgressText">0% Complete</div>
-          <textarea id="editNotes" placeholder="Notes (max 500 characters)" maxlength="500"></textarea>
+          <label>Start Date</label>
+          <input type="date" id="editStartDate">
+          <label>End Date</label>
+          <input type="date" id="editEndDate">
+          <label>Notes</label>
+          <textarea id="editNotes"></textarea>
+          <label>Subtasks</label>
           <div id="subtaskList"></div>
-          <input type="text" id="newSubtask" placeholder="New Subtask" />
-          <button type="button" onclick="addSubtaskToModal()">Add Subtask</button>
-          <button type="submit">Save</button>
-          <button type="button" onclick="closeModal()">Cancel</button>
+          <div class="progress-bar">
+            <div id="modalProgressBar" class="progress-bar-fill"></div>
+          </div>
+          <div id="modalProgressText" class="progress-text">0% Complete</div>
+          <div style="display: flex; gap: 8px; align-items: center;">
+            <input type="text" id="newSubtask" placeholder="New subtask">
+            <button type="button" onclick="addSubtaskToModal()">Add Subtask</button>
+          </div>
+          <!-- New Suggest Subtasks Button -->
+          <button type="button" id="suggestSubtasksBtn" onclick="suggestSubtasks()">Suggest Subtasks</button>
+          <!-- Container for Suggested Subtasks -->
+          <div id="suggestedSubtasks" style="margin-top: 10px;"></div>
+          <div style="display: flex; gap: 8px; margin-top: 10px;">
+            <button type="submit">Save</button>
+            <button type="button" onclick="closeModal()">Cancel</button>
+          </div>
         </form>
       </div>
     </div>
